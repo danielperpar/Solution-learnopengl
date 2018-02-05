@@ -107,34 +107,31 @@ int main()
 	std::vector<glm::vec3> lightColors;
 	std::vector<glm::vec3> modelPositions;
 
-	unsigned int numLights = 10;
+	unsigned int numLights = 32;
 	
 	for (int i = 0; i < numLights; i++)
 	{	
-		srand(1000 + i);
-		glm::vec3 pos(rand() % 5, rand() % 5, rand() % 5);
-		
-		lightPositions.push_back(pos);
-	}
-	
-	for (int i = 0; i < numLights; i++)
-	{
-		srand(1000 + i);
-		glm::vec3 color((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
-
-		std::cout << "(" << color.r << "," << color.g << "," << color.b << ")" << std::endl;
-		lightColors.push_back(color);
+		// calculate slightly random offsets
+		float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+		float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
+		float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
+		// also calculate random color
+		float rColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
+		float gColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
+		float bColor = ((rand() % 100) / 200.0f) + 0.5; // between 0.5 and 1.0
+		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
 	}
 
-	int offset = 3;
-	for (int z = -1; z < 2; z++)
-	{
-		for (int x = -1; x < 2; x++)
-		{
-			glm::vec3 pos(x * offset, 0.0f, z * offset);
-			modelPositions.push_back(pos);
-		}
-	}
+	modelPositions.push_back(glm::vec3(-3.0, -3.0, -3.0));
+	modelPositions.push_back(glm::vec3(0.0, -3.0, -3.0));
+	modelPositions.push_back(glm::vec3(3.0, -3.0, -3.0));
+	modelPositions.push_back(glm::vec3(-3.0, -3.0, 0.0));
+	modelPositions.push_back(glm::vec3(0.0, -3.0, 0.0));
+	modelPositions.push_back(glm::vec3(3.0, -3.0, 0.0));
+	modelPositions.push_back(glm::vec3(-3.0, -3.0, 3.0));
+	modelPositions.push_back(glm::vec3(0.0, -3.0, 3.0));
+	modelPositions.push_back(glm::vec3(3.0, -3.0, 3.0));
 	
 	// Framebuffer 
 	// -------
@@ -234,16 +231,20 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		lightingPassShader.Use();
-		
-		float time = (float)glfwGetTime();
+		float constant = 1.0;
+		float linear = 0.2;
+		float quadratic = 1.8;
 		for (int i = 0; i < numLights; i++)
 		{
 			lightingPassShader.SetVec3("lights[" + std::to_string(i) + "].position", lightPositions[i]);
 			lightingPassShader.SetVec3("lights[" + std::to_string(i) + "].color", lightColors[i]);
-			glm::mat4 model;
-			model = glm::rotate(model, (float)glm::radians(time * 50), glm::vec3(0.0f, 1.0f, 0.0f));
-			model = glm::translate(model, lightPositions[i]);
-			lightingPassShader.SetMat4("lightModel", model);
+
+			float lightMax = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
+			float radius = (-linear + std::sqrtf(linear * linear - 4.0f * quadratic * (constant - (256.0f / 5.0f) * lightMax)))	/ (2.0f * quadratic);
+
+			lightingPassShader.SetFloat("lights[" + std::to_string(i) + "].linear", linear);
+			lightingPassShader.SetFloat("lights[" + std::to_string(i) + "].quadratic", quadratic);
+			lightingPassShader.SetFloat("lights[" + std::to_string(i) + "].radius", radius);		
 		}
 
 		lightingPassShader.SetVec3("viewPos", camera.Position);
@@ -271,7 +272,6 @@ int main()
 		for (int i = 0; i < numLights; i++)
 		{
 			glm::mat4 model;
-			model = glm::rotate(model, (float)glm::radians(time * 50), glm::vec3(0.0f, 1.0f, 0.0f));
 			model = glm::translate(model, lightPositions[i]);
 			model = glm::scale(model, glm::vec3(0.2f));
 			lampShader.SetMat4("model", model);
