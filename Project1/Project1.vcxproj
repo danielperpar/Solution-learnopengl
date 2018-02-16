@@ -74,8 +74,8 @@
     <LibraryPath>D:\C++\learnopengl.com\Solution learnopengl\Project1\3rdparty\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\C++\learnopengl.com\Solution learnopengl\Project1\3rdparty\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\C++\learnopengl.com\Solution learnopengl\Project1\3rdparty\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\C++\learnopengl.com\Solution learnopengl\3rdparty\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\C++\learnopengl.com\Solution learnopengl\3rdparty\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -124,8 +124,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera_test.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
