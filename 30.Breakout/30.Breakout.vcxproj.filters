@@ -48,6 +48,9 @@
     <ClCompile Include="ball_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="particle_generator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -75,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ball_object.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="particle_generator.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
