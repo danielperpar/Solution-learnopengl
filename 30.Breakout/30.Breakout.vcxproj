@@ -142,6 +142,7 @@
     <ClInclude Include="ball_object.h" />
     <ClInclude Include="particle_generator.h" />
     <ClInclude Include="post_processor.h" />
+    <ClInclude Include="power_up.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="sprite_renderer.h" />
