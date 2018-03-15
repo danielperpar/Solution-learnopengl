@@ -87,7 +87,7 @@ void Game::Update(GLfloat dt)
 	Ball->Move(dt, this->Width);
 	this->DoCollisions();
 	// Update particles
-	Particles->Update(dt, *Ball, 2, glm::vec2(Ball->Radius / 2));
+	Particles->Update(dt, *Ball, 1, glm::vec2(Ball->Radius / 2));
 	// Reduce shake time
 	if (ShakeTime > 0.0f)
 	{
