@@ -13,6 +13,8 @@
 #include "particle_generator.h"
 #include "post_processor.h"
 #include <algorithm>
+#include <irrklang/irrKlang.h>
+using namespace irrklang;
 
 // Game-related State data
 SpriteRenderer		*Renderer;
@@ -20,6 +22,7 @@ GameObject			*Player;
 BallObject			*Ball;
 ParticleGenerator	*Particles;
 PostProcessor		*Effects;
+ISoundEngine      *SoundEngine = createIrrKlangDevice();
 GLfloat				ShakeTime = 0.0f;
 
 
@@ -36,6 +39,7 @@ Game::~Game()
 	delete Ball;
 	delete Particles;
 	delete Effects;
+	SoundEngine->drop();
 }
 
 void Game::Init()
@@ -83,10 +87,8 @@ void Game::Init()
 	Player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture("paddle"));
 	glm::vec2 ballPos = playerPos + glm::vec2(PLAYER_SIZE.x / 2 - BALL_RADIUS, -BALL_RADIUS * 2);
 	Ball = new BallObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY,ResourceManager::GetTexture("face"));
-
-	//Effects->Shake = GL_TRUE;
-	//Effects->Confuse = GL_TRUE;
-	//Effects->Chaos = GL_TRUE;
+	// Audio
+	SoundEngine->play2D("resources/audio/breakout.mp3", GL_TRUE);
 }
 
 void Game::Update(GLfloat dt)
@@ -322,11 +324,13 @@ void Game::DoCollisions()
 				{
 					box.Destroyed = GL_TRUE;
 					this->SpawnPowerUps(box);
+					SoundEngine->play2D("resources/audio/bleep.mp3", GL_FALSE);
 				}
 				else
 				{   // if block is solid, enable shake effect
 					ShakeTime = 0.05f;
 					Effects->Shake = GL_TRUE;
+					SoundEngine->play2D("resources/audio/solid.wav", GL_FALSE);
 				}
 				// Collision resolution
 				Direction dir = std::get<1>(collision);
@@ -372,6 +376,7 @@ void Game::DoCollisions()
 				ActivatePowerUp(powerUp);
 				powerUp.Destroyed = GL_TRUE;
 				powerUp.Activated = GL_TRUE;
+				SoundEngine->play2D("resources/audio/powerup.wav", GL_FALSE);
 			}
 		}
 	}
@@ -393,7 +398,10 @@ void Game::DoCollisions()
 		// Fix sticky paddle
 		Ball->Velocity.y = -1 * abs(Ball->Velocity.y);
 
+		// If Sticky powerup is activated, also stick ball to paddle once new velocity vectors were calculated
 		Ball->Stuck = Ball->Sticky;
+
+		SoundEngine->play2D("resources/audio/bleep.wav", GL_FALSE);
 	}
 }
 
